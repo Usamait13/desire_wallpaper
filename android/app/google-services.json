@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "656174669002",
+    "project_id": "desire-a4c23",
+    "storage_bucket": "desire-a4c23.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656174669002:android:bb8a08e77e4c3c10d46833",
+        "android_client_info": {
+          "package_name": "com.app.desire_wallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656174669002-38ffao8s8kq5tq0q20uu3vlr1c1sr1i7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.desire_wallpaper",
+            "certificate_hash": "5e641d4bfd41028a3787d7a6418918e194063ae1"
+          }
+        },
+        {
+          "client_id": "656174669002-g8sq26mnpb72aqnkrasl292gv1t3p3tf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5Efgf0HGF3WkdpWkygzykA_5t73nVtu8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656174669002-g8sq26mnpb72aqnkrasl292gv1t3p3tf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

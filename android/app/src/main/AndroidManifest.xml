@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.desire_wallpaper">
+    package="com.app.desire_wallpaper">
    <application
         android:label="desire_wallpaper"
         android:name="${applicationName}"
