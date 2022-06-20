@@ -5,4 +5,5 @@ class AppColors {
   static Color white = Colors.white;
   static Color grey = Colors.grey;
   static Color transparent = Colors.transparent;
+  static Color yellow = Colors.yellow;
 }

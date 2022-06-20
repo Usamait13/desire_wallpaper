@@ -10,7 +10,7 @@ class AuthImageView extends StatefulWidget {
   final double? height;
   final double? width;
   final  fileImage;
-  final openCamera;
+  final Function openCamera;
   final openGallery;
 
   const AuthImageView({
@@ -35,7 +35,7 @@ class _AuthImageViewState extends State<AuthImageView> {
             width: 150,
             height: 150,
             child: ClipOval(
-              child: widget.fileImage!=null?Image.file(widget.fileImage):Image.network("https://images.unsplash.com/photo-1655365225179-fbc453d3bd58?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60")
+              child: widget.fileImage!=null?Image.file(widget.fileImage,fit: BoxFit.cover,):Image.asset("assets/Images/user.png",fit: BoxFit.cover,)
             )),
         Positioned(
           bottom: 5,
@@ -52,7 +52,7 @@ class _AuthImageViewState extends State<AuthImageView> {
                   backgroundColor: AppColors.transparent,
                   builder: (BuildContext context) {
                     return Container(
-                      height: 130,
+                      height: 150,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -63,9 +63,8 @@ class _AuthImageViewState extends State<AuthImageView> {
                             margin: 5,
                             onPressed: () async {
                               var status = await Permission.camera.status;
-
                               if (status.isGranted) {
-                                widget.openCamera;
+                                widget.openCamera();
                                 Navigator.pop(context);
                               } else {
                                 await Permission.camera.request();
@@ -81,7 +80,7 @@ class _AuthImageViewState extends State<AuthImageView> {
                               var status = await Permission.storage.status;
 
                               if (status.isGranted) {
-                                widget.openGallery;
+                                widget.openGallery();
                                 Navigator.pop(context);
                               } else {
                                 await Permission.storage.request();
