@@ -25,6 +25,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashViewController(),
+
+      //removing glow from scroll view
+      scrollBehavior: MyCustomScrollBehavior(),
     );
+  }
+}
+
+//removing glow from scroll view
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
   }
 }
