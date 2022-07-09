@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:desire_wallpaper/ApplicationModules/Models/category_model.dart';
+import 'package:desire_wallpaper/ApplicationModules/Models/user_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -30,56 +30,90 @@ class LocalDatabaseHepler {
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
       await db.execute('CREATE TABLE tbl_user('
-          'user_id INTEGER PRIMARY KEY,'
-          'user_name Text,'
-          'user_email Text'
-          'user_phone Text'
-          'user_image Text'
+          'name Text,'
+          'email Text,'
+          'number Text,'
+          'password Text,'
+          'imageUrl Text'
           ')');
-      await db.execute('CREATE TABLE tbl_category('
-          'category_id INTEGER PRIMARY KEY,'
-          'category_name Text,'
-          'category_image Text'
+
+      await db.execute('CREATE TABLE tbl_login('
+          'name Text,'
+          'email Text,'
+          'number Text,'
+          'password Text,'
+          'imageUrl Text'
           ')');
-      await db.execute('CREATE TABLE tbl_wallpaper('
-          'wallpaper_id INTEGER PRIMARY KEY,'
-          'category Text,'
-          'wallpaper_image Text'
-          ')');
+      // await db.execute('CREATE TABLE tbl_category('
+      //     'category_id INTEGER PRIMARY KEY,'
+      //     'category_name Text,'
+      //     'category_image Text'
+      //     ')');
+      // await db.execute('CREATE TABLE tbl_wallpaper('
+      //     'wallpaper_id INTEGER PRIMARY KEY,'
+      //     'category Text,'
+      //     'wallpaper_image Text'
+      //     ')');
     });
   }
 
-  insertCategory({required CategoryModel categoryModel}) async {
+  Future<int> insertUsertoLocal({required UserModel userModel}) async {
     final db = await database;
 
-    final res = await db.insert('tbl_category', {
-      // 'category_id': categoryModel.category_id,
-      'category_name': categoryModel.category_name,
-      'category_image': categoryModel.category_image,
+    final res = await db.insert('tbl_user', {
+      'name': userModel.name,
+      'email': userModel.email,
+      'number': userModel.number,
+      'password': userModel.password,
+      'imageUrl': userModel.imageUrl,
     });
-    print(res.runtimeType);
+    await db.insert('tbl_login', {
+      'name': userModel.name,
+      'email': userModel.email,
+      'number': userModel.number,
+      'password': userModel.password,
+      'imageUrl': userModel.imageUrl,
+    });
+    // print(res.runtimeType);
     return res;
   }
-  insertCategoryList(List<CategoryModel> category) {
-    for (int i = 0; i < category.length; i++) {
-      insertCategory(
-        categoryModel: category[i],
-      );
-    }
-  }
 
-  Future<List<CategoryModel>> fetchCategoryFromLocal() async {
+   deleteLoginTable() async {
     final db = await database;
-    final res = await db.rawQuery("SELECT * FROM tbl_category");
-    return CategoryModel.localToListView(res);
+    final res = await db.rawQuery("DELETE FROM tbl_login");
   }
 
-  deleteAllCategories() async {
-    final db = await database;
-    final res = await db.rawQuery("DELETE FROM tbl_category");
-  }
+  // insertCategory({required CategoryModel categoryModel}) async {
+  //   final db = await database;
+  //
+  //   final res = await db.insert('tbl_category', {
+  //     // 'category_id': categoryModel.category_id,
+  //     'category_name': categoryModel.category_name,
+  //     'category_image': categoryModel.category_image,
+  //   });
+  //   print(res.runtimeType);
+  //   return res;
+  // }
+  // insertCategoryList(List<CategoryModel> category) {
+  //   for (int i = 0; i < category.length; i++) {
+  //     insertCategory(
+  //       categoryModel: category[i],
+  //     );
+  //   }
+  // }
+  //
+  // Future<List<CategoryModel>> fetchCategoryFromLocal() async {
+  //   final db = await database;
+  //   final res = await db.rawQuery("SELECT * FROM tbl_category");
+  //   return CategoryModel.localToListView(res);
+  // }
 
-  checkDataExistenceByLength( String table) async {
+  // deleteAllCategories() async {
+  //   final db = await database;
+  //   final res = await db.rawQuery("DELETE FROM tbl_category");
+  // }
+
+  Future<int> checkDataExistenceByLength({required String table}) async {
     final db = await database;
     int count = Sqflite.firstIntValue(
         await db.rawQuery('SELECT COUNT(*) FROM ${table}'))!;

@@ -38,7 +38,7 @@ class _WallpaperItemViewState extends State<WallpaperItemView> {
         );
       },
       child: Hero(
-        tag: widget.wallpaperModel.src.portrait,
+        tag: widget.wallpaperModel.id,
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.black,

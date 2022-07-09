@@ -3,13 +3,11 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desire_wallpaper/ApplicationModules/Models/wallpaper_model.dart';
 import 'package:desire_wallpaper/Utils/dimensions.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_share/flutter_share.dart';
+
+// import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:wallpaper/wallpaper.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../Utils/app_colors.dart';
 import '../Views/download_bottom_sheet.dart';
 import '../Views/wallpaper_icons_view.dart';
@@ -26,27 +24,53 @@ class WallpaperViewController extends StatefulWidget {
 
 class _WallpaperViewControllerState extends State<WallpaperViewController> {
 
+  late BannerAd bannerAd;
+
+
+  @override
+  void initState() {
+    super.initState();
+    initBannerAds();
+  }
+
   shareWallpaper() async {
     // var response = await get(Uri.parse(widget.wallpaperModel.src.portrait));
     // final result = await ImageGallerySaver.saveImage(
     //   response.bodyBytes,
     // );
+    // print(result['filePath']);
+
+    // var cachedimage = await DefaultCacheManager()
+    //     .getSingleFile(widget.wallpaperModel.src.portrait);
+
     // await FlutterShare.shareFile(
     //   title: 'Example share',
     //   text: 'Example share text',
-    //   filePath: result,
+    //   filePath: cachedimage.path,
     // );
   }
 
-
+  void initBannerAds() {
+    bannerAd = BannerAd(
+      adUnitId: BannerAd.testAdUnitId,
+      listener: BannerAdListener(onAdFailedToLoad: (ad, error) {
+        print("error");
+        print(error);
+      }),
+      request: AdRequest(),
+      size: AdSize.banner,
+    );
+    bannerAd.load();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: AppColors.transparent,
       body: Stack(
         children: [
           Hero(
-            tag: widget.wallpaperModel.src.portrait,
+            tag: widget.wallpaperModel.id,
             child: Container(
               height: Dimensions.screenHeight(context: context),
               width: Dimensions.screenWidth(context: context),
@@ -55,7 +79,7 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
                   imageUrl: widget.wallpaperModel.src.portrait,
                   placeholder: (context, url) => Center(
                         child: SpinKitRotatingCircle(
-                          color: Colors.white,
+                          color: Colors.black,
                           size: 30.0,
                         ),
                       ),
@@ -83,7 +107,7 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
             ),
           ),
           Positioned(
-            bottom: 30,
+            bottom: 60,
             right: 10,
             left: 10,
             child: Container(
@@ -115,8 +139,23 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
               ),
             ),
           ),
+          Positioned(
+            bottom: 0,
+            right: 10,
+            left: 10,
+            child: Container(
+              height: bannerAd.size.height.toDouble(),
+              width: bannerAd.size.width.toDouble(),
+              child: AdWidget(ad: bannerAd),
+            ),
+          ),
         ],
       ),
+      // bottomNavigationBar: Container(
+      //   height: bannerAd.size.height.toDouble(),
+      //   width: bannerAd.size.width.toDouble(),
+      //   child: AdWidget(ad: bannerAd),
+      // ),
     );
   }
 }

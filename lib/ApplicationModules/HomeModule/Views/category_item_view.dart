@@ -12,12 +12,13 @@ class CategoryItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double categoryHeight = Dimensions.screenWidth(context: context)! / 3.2;
+    double categoryHeight =80;
+    double categoryWidth =120;
     double radius = 10;
     return GestureDetector(
       onTap: () {},
       child: Container(
-        width: categoryHeight,
+        width: categoryWidth,
         height: categoryHeight,
         margin: EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
@@ -27,7 +28,7 @@ class CategoryItemView extends StatelessWidget {
         child: Stack(
           children: [
             SizedBox(
-              width: categoryHeight,
+              width: categoryWidth,
               height: categoryHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(radius),
@@ -39,20 +40,20 @@ class CategoryItemView extends StatelessWidget {
             ),
             Container(
               height: categoryHeight,
-              width: categoryHeight,
+              width: categoryWidth,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(radius),
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.black.withAlpha(150),
-                    AppColors.black.withAlpha(150),
+                    AppColors.black.withAlpha(100),
+                    AppColors.black.withAlpha(100),
                     // AppColors.transparent,
                   ],
                 ),
               ),
             ),
             SizedBox(
-              width: categoryHeight,
+              width: categoryWidth,
               height: categoryHeight,
               child: Center(
                 child: HomeTextView(

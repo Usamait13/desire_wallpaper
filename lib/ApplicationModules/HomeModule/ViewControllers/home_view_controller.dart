@@ -9,6 +9,7 @@ import 'package:desire_wallpaper/ApplicationModules/Models/wallpaper_model.dart'
 import 'package:desire_wallpaper/Utils/app_colors.dart';
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:desire_wallpaper/Utils/spaces.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
@@ -25,10 +26,11 @@ class HomeViewController extends StatefulWidget {
 
 class _HomeViewControllerState extends State<HomeViewController> {
   late BannerAd bannerAd;
-  final HomeViewModel homeViewModel = Get.put(HomeViewModel());
+  HomeViewModel homeViewModel = Get.put(HomeViewModel());
   ScrollController scrollController = new ScrollController();
   List<WallpaperModel> wallpaperList = [];
-  int noOfImageToLoad = 9;
+  int noOfImageToLoad = 6;
+  String url = "";
 
   @override
   void initState() {
@@ -36,31 +38,36 @@ class _HomeViewControllerState extends State<HomeViewController> {
     super.initState();
     initBannerAds();
     homeViewModel.fetchCategories();
-    // homeViewModel.getWallpaper();
     getWallpapers();
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
         // homeViewModel.getWallpaper();
+        noOfImageToLoad++;
+        // homeViewModel.noOfImageToLoad.value ++;
         getWallpapers();
-        noOfImageToLoad = noOfImageToLoad + 9;
         // setState(() {});
       }
     });
   }
 
   getWallpapers() async {
-    final value = await get(
-      Uri.parse(
-          "https://api.pexels.com/v1/curated?page=5&per_page=${noOfImageToLoad}"),
+    url =
+        "https://api.pexels.com/v1/curated?page=10&per_page=${noOfImageToLoad}";
+    // url = "https://api.pexels.com/v1/search?query=Ocean&per_page=${noOfImageToLoad}}";
+    List<WallpaperModel> temp = [];
+    await get(
+      Uri.parse(url),
       headers: {"Authorization": homeViewModel.apiKEY.value},
     ).then((value) {
       Map<String, dynamic> jsonData = jsonDecode(value.body);
+      // wallpaperList.clear();
       jsonData["photos"].forEach((element) {
         WallpaperModel photosModel;
         photosModel = WallpaperModel.fromJson(element);
-        wallpaperList.add(photosModel);
+        temp.add(photosModel);
       });
+      wallpaperList.addAll(temp);
       setState(() {});
     });
   }
@@ -118,22 +125,21 @@ class _HomeViewControllerState extends State<HomeViewController> {
               ),
               AddVerticalSpace(10),
               Container(
-                  height: Dimensions.screenWidth(context: context)! / 3.2,
-                  child: ListView.builder(
-                    itemCount: homeViewModel.categoryList.value.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return CategoryItemView(
-                          categoryModel: CategoryModel(
-                        // category_id:
-                        // homeViewModel.categoryList.value[index].category_id,
-                        category_name: homeViewModel
-                            .categoryList.value[index].category_name,
-                        category_image: homeViewModel
-                            .categoryList.value[index].category_image,
-                      ));
-                    },
-                  )),
+                height: 80,
+                child: Obx(() => ListView.builder(
+                      itemCount: homeViewModel.categoryList.value.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return CategoryItemView(
+                            categoryModel: CategoryModel(
+                          category_name: homeViewModel
+                              .categoryList.value[index].category_name,
+                          category_image: homeViewModel
+                              .categoryList.value[index].category_image,
+                        ));
+                      },
+                    )),
+              ),
               AddVerticalSpace(10),
               HomeTextView(text: "Popular", fontSize: 18),
               AddVerticalSpace(10),
