@@ -4,14 +4,12 @@ class UserModel {
   final String email;
   final String name;
   final String number;
-  final String password;
   final String imageUrl;
 
   UserModel({
     required this.email,
     required this.name,
     required this.number,
-    required this.password,
     required this.imageUrl,
   });
 
@@ -19,7 +17,6 @@ class UserModel {
     email: (doc.data() as dynamic)["cat_name"] ?? "",
     name: (doc.data() as dynamic)["name"] ?? "",
     number: (doc.data() as dynamic)["number"] ?? "",
-    password: (doc.data() as dynamic)["password"] ?? "",
     imageUrl: (doc.data() as dynamic)["imageUrl"] ?? "",
   );
 
@@ -27,7 +24,6 @@ class UserModel {
     email: json["email"] ?? "",
     name: json["name"] ?? "",
     number: json["number"] ?? "",
-    password: json["password"] ?? "",
     imageUrl: json["imageUrl"] ?? "",
   );
 

@@ -33,7 +33,6 @@ class LocalDatabaseHepler {
           'name Text,'
           'email Text,'
           'number Text,'
-          'password Text,'
           'imageUrl Text'
           ')');
 
@@ -41,7 +40,6 @@ class LocalDatabaseHepler {
           'name Text,'
           'email Text,'
           'number Text,'
-          'password Text,'
           'imageUrl Text'
           ')');
       // await db.execute('CREATE TABLE tbl_category('
@@ -64,18 +62,22 @@ class LocalDatabaseHepler {
       'name': userModel.name,
       'email': userModel.email,
       'number': userModel.number,
-      'password': userModel.password,
       'imageUrl': userModel.imageUrl,
     });
     await db.insert('tbl_login', {
       'name': userModel.name,
       'email': userModel.email,
       'number': userModel.number,
-      'password': userModel.password,
       'imageUrl': userModel.imageUrl,
     });
     // print(res.runtimeType);
     return res;
+  }
+
+  Future<List<UserModel>> fetchUserFromLocal() async {
+    final db = await database;
+    final res = await db.rawQuery("SELECT * FROM tbl_login");
+    return UserModel.localToListView(res);
   }
 
    deleteLoginTable() async {
@@ -118,5 +120,6 @@ class LocalDatabaseHepler {
     int count = Sqflite.firstIntValue(
         await db.rawQuery('SELECT COUNT(*) FROM ${table}'))!;
     return count;
+
   }
 }

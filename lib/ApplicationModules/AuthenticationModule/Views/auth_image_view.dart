@@ -9,7 +9,7 @@ import '../../../Utils/spaces.dart';
 class AuthImageView extends StatefulWidget {
   final double? height;
   final double? width;
-  final  fileImage;
+  final fileImage;
   final Function openCamera;
   final openGallery;
 
@@ -31,12 +31,24 @@ class _AuthImageViewState extends State<AuthImageView> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SizedBox(
+        Container(
             width: 150,
             height: 150,
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.black,
+              borderRadius: BorderRadius.circular(200)
+            ),
             child: ClipOval(
-              child: widget.fileImage!=null?Image.file(widget.fileImage,fit: BoxFit.cover,):Image.asset("assets/Images/user.png",fit: BoxFit.cover,)
-            )),
+                child: widget.fileImage != null
+                    ? Image.file(
+                        widget.fileImage,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        "assets/Images/user.png",
+                        fit: BoxFit.cover,
+                      ))),
         Positioned(
           bottom: 5,
           right: 5,

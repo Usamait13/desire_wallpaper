@@ -76,10 +76,11 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
       body: Stack(
         children: [
           Container(
+            height: Dimensions.screenHeight(context: context),
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  AddVerticalSpace(80),
+                  AddVerticalSpace(50),
                   AuthImageView(
                     fileImage: encodedImage,
                     openCamera: () async {
@@ -199,9 +200,7 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                               email: email.text.trim(),
                               number: number.text.trim(),
                               password: password.text.trim(),
-                              imageUrl: imageUrl.isNotEmpty
-                                  ? imageUrl.trim()
-                                  : "assets/Images/user.png",
+                              imageUrl: imageUrl
                             ).then((value) {
                               db
                                   .insertUsertoLocal(
@@ -209,10 +208,7 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                                   email: email.text.trim(),
                                   name: name.text.trim(),
                                   number: number.text.trim(),
-                                  password: password.text.trim(),
-                                  imageUrl: imageUrl.isNotEmpty
-                                      ? imageUrl.trim()
-                                      : "assets/Images/user.png",
+                                  imageUrl: imageUrl
                                 ),
                               )
                                   .then((value) {
@@ -245,6 +241,7 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                     textColor: AppColors.white,
                     fontSize: 18,
                   ),
+                  AddVerticalSpace(30),
                   AddVerticalSpace(20),
                 ],
               ),
@@ -270,9 +267,42 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
         ],
       ),
       bottomNavigationBar: Container(
-        height: bannerAd.size.height.toDouble(),
-        width: bannerAd.size.width.toDouble(),
-        child: AdWidget(ad: bannerAd),
+        height: 80,
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: 0,
+              right: 20,
+              left: 20,
+              child: Container(
+                height: bannerAd.size.height.toDouble(),
+                width: bannerAd.size.width.toDouble(),
+                child: AdWidget(ad: bannerAd),
+              ),
+            ),
+            Container(
+              width: Dimensions.screenWidth(context: context),
+              padding: EdgeInsets.only(bottom: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AuthTextView(text: "Already have an account?"),
+                  AddHorizontalSpace(5),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: AuthTextView(
+                      text: "Sign In",
+                      color: AppColors.blue,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
