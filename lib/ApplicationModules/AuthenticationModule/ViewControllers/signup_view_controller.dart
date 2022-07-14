@@ -9,6 +9,7 @@ import 'package:desire_wallpaper/Utils/spaces.dart';
 import 'package:desire_wallpaper/Utils/toast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_picker/image_picker.dart';
@@ -68,14 +69,14 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: AuthTextView(text: "Sign Up"),
-        backgroundColor: AppColors.black,
-      ),
-      body: Stack(
-        children: [
-          Container(
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: AuthTextView(text: "Sign Up"),
+            backgroundColor: AppColors.black,
+          ),
+          body: Container(
             height: Dimensions.screenHeight(context: context),
             child: SingleChildScrollView(
               child: Column(
@@ -199,7 +200,6 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                               name: name.text.trim(),
                               email: email.text.trim(),
                               number: number.text.trim(),
-                              password: password.text.trim(),
                               imageUrl: imageUrl
                             ).then((value) {
                               db
@@ -247,63 +247,66 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
               ),
             ),
           ),
-          isLoading
-              ? Container(
-                  height: Dimensions.screenHeight(context: context),
+          bottomNavigationBar: Container(
+            height: 80,
+            child: Stack(
+              children: [
+                Positioned(
+                  bottom: 0,
+                  right: 20,
+                  left: 20,
+                  child: Container(
+                    height: bannerAd.size.height.toDouble(),
+                    width: bannerAd.size.width.toDouble(),
+                    child: AdWidget(ad: bannerAd),
+                  ),
+                ),
+                Container(
                   width: Dimensions.screenWidth(context: context),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.black.withAlpha(200),
-                        AppColors.black.withAlpha(200),
-                      ],
-                    ),
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AuthTextView(text: "Already have an account?"),
+                      AddHorizontalSpace(5),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: AuthTextView(
+                          text: "Sign In",
+                          color: AppColors.blue,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : SizedBox(),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        height: 80,
-        child: Stack(
-          children: [
-            Positioned(
-              bottom: 0,
-              right: 20,
-              left: 20,
-              child: Container(
-                height: bannerAd.size.height.toDouble(),
-                width: bannerAd.size.width.toDouble(),
-                child: AdWidget(ad: bannerAd),
-              ),
+                ),
+              ],
             ),
-            Container(
-              width: Dimensions.screenWidth(context: context),
-              padding: EdgeInsets.only(bottom: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AuthTextView(text: "Already have an account?"),
-                  AddHorizontalSpace(5),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: AuthTextView(
-                      text: "Sign In",
-                      color: AppColors.blue,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        isLoading
+            ? Container(
+          height: Dimensions.screenHeight(context: context),
+          width: Dimensions.screenWidth(context: context),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.black.withAlpha(200),
+                AppColors.black.withAlpha(200),
+              ],
+            ),
+          ),
+          child: Center(
+            child: SpinKitRotatingCircle(
+              color: Colors.black,
+              size: 50.0,
+            ),
+          ),
+        )
+            : SizedBox(),
+      ],
     );
   }
 }

@@ -13,7 +13,6 @@ import '../../Models/wallpaper_model.dart';
 
 class HomeViewModel extends GetxController {
   LocalDatabaseHepler localDatabaseHepler = LocalDatabaseHepler();
-  RxList<CategoryModel> categoryList = <CategoryModel>[].obs;
 
   // RxList<WallpaperModel> wallpaperList = <WallpaperModel>[].obs;
   // RxInt noOfImageToLoad = 6.obs;
@@ -28,15 +27,6 @@ class HomeViewModel extends GetxController {
     );
   }
 
-  fetchCategories() {
-    Stream<QuerySnapshot<Map<String, dynamic>>> wallpaperStream =
-        FirebaseFirestore.instance.collection("Category").snapshots();
-    wallpaperStream.listen((event) {
-      if (CategoryModel.jsonToListView(event.docs).isNotEmpty) {
-        categoryList.value = CategoryModel.jsonToListView(event.docs);
-      }
-    });
-  }
 
 //firebase implementation
 ////////////////////////////

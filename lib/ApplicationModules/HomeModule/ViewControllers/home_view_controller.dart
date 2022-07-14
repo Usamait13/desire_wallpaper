@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:desire_wallpaper/ApplicationModules/DrawerModule/ViewControllers/drawer_view_controller.dart';
 import 'package:desire_wallpaper/ApplicationModules/HomeModule/ViewModels/home_view_model.dart';
-import 'package:desire_wallpaper/ApplicationModules/HomeModule/Views/category_item_view.dart';
+import 'package:desire_wallpaper/ApplicationModules/HomeModule/Views/home_category_item_view.dart';
 import 'package:desire_wallpaper/ApplicationModules/HomeModule/Views/home_text_view.dart';
 import 'package:desire_wallpaper/ApplicationModules/Models/category_model.dart';
 import 'package:desire_wallpaper/ApplicationModules/Models/wallpaper_model.dart';
@@ -15,7 +15,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../LocalDatabaseHelper/local_database_helper.dart';
+import '../../CategoryModule/ViewControllers/category_view_controller.dart';
+import '../../CategoryModule/ViewModels/category_view_model.dart';
+import '../../Models/user_model.dart';
 import '../Views/home_image_view.dart';
 import '../Views/wallpaper_item_view.dart';
 
@@ -27,17 +33,26 @@ class HomeViewController extends StatefulWidget {
 class _HomeViewControllerState extends State<HomeViewController> {
   late BannerAd bannerAd;
   HomeViewModel homeViewModel = Get.put(HomeViewModel());
+  CategoryViewModel categoryViewModel = Get.put(CategoryViewModel());
   ScrollController scrollController = new ScrollController();
   List<WallpaperModel> wallpaperList = [];
   int noOfImageToLoad = 6;
   String url = "";
+
+  int count = 0;
+  LocalDatabaseHepler db = LocalDatabaseHepler();
+  List<UserModel> currentUser = <UserModel>[];
+  String name = "";
+  String email = "";
+  String number = "";
+  String imageUrl = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initBannerAds();
-    homeViewModel.fetchCategories();
+    categoryViewModel.fetchCategories();
     getWallpapers();
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
@@ -49,6 +64,34 @@ class _HomeViewControllerState extends State<HomeViewController> {
         // setState(() {});
       }
     });
+
+    getCount().then((value) {
+      setState(() {
+        count = value;
+      });
+      // count = value;
+      print(count);
+    });
+    getUser();
+  }
+
+  Future<int> getCount() async {
+    return await db.checkDataExistenceByLength(table: "tbl_login");
+  }
+
+  getUser() async {
+    currentUser = await db.fetchUserFromLocal();
+    for (int i = 0; i < currentUser.length; i++) {
+      setState(() {
+        name = currentUser[i].name;
+        email = currentUser[i].email;
+        number = currentUser[i].number;
+        imageUrl = currentUser[i].imageUrl;
+      });
+      // name = currentUser[i].name;
+      // email = currentUser[i].email;
+      // imageUrl = currentUser[i].imageUrl;
+    }
   }
 
   getWallpapers() async {
@@ -93,12 +136,27 @@ class _HomeViewControllerState extends State<HomeViewController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             HomeTextView(text: "WallPapers"),
-            HomeImageView(),
+            HomeProfileImageView(
+              userModel: UserModel(
+                email: email,
+                name: name,
+                number: number,
+                imageUrl: imageUrl,
+              ),
+            ),
           ],
         ),
         backgroundColor: AppColors.black,
       ),
-      drawer: DrawerViewController(),
+      drawer: DrawerViewController(
+        count: count,
+        userModel: UserModel(
+          email: email,
+          name: name,
+          number: number,
+          imageUrl: imageUrl,
+        ),
+      ),
       body: Container(
         width: Dimensions.screenWidth(context: context),
         height: Dimensions.screenHeight(context: context),
@@ -114,7 +172,14 @@ class _HomeViewControllerState extends State<HomeViewController> {
                 children: [
                   HomeTextView(text: "Categories", fontSize: 18),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              child: CategoryViewController(),
+                              type: PageTransitionType.rightToLeft,
+                              duration: Duration(milliseconds: 300)));
+                    },
                     child: HomeTextView(
                       text: "See all",
                       fontSize: 16,
@@ -127,21 +192,39 @@ class _HomeViewControllerState extends State<HomeViewController> {
               Container(
                 height: 80,
                 child: Obx(() => ListView.builder(
-                      itemCount: homeViewModel.categoryList.value.length,
+                      itemCount: categoryViewModel.categoryList.value.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         return CategoryItemView(
                             categoryModel: CategoryModel(
-                          category_name: homeViewModel
+                          category_name: categoryViewModel
                               .categoryList.value[index].category_name,
-                          category_image: homeViewModel
+                          category_image: categoryViewModel
                               .categoryList.value[index].category_image,
                         ));
                       },
                     )),
               ),
               AddVerticalSpace(10),
-              HomeTextView(text: "Popular", fontSize: 18),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  HomeTextView(text: "Popular", fontSize: 18),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          await launchUrl(Uri.parse("https://www.pexels.com/"));
+                        },
+                        child: HomeTextView(
+                          text: "Photos Provided by Pixels",
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
               AddVerticalSpace(10),
               Container(
                 child: GridView.builder(

@@ -32,7 +32,6 @@ Future<void> insertUserDatatoFirebase({
   required String name,
   required String email,
   required String number,
-  required String password,
   required String imageUrl,
 }) async {
   await FirebaseFirestore.instance
@@ -42,7 +41,6 @@ Future<void> insertUserDatatoFirebase({
     "name": name,
     "email": email,
     "number": number,
-    "password": password,
     "imageUrl": imageUrl,
   });
 }

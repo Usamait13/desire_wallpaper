@@ -26,7 +26,7 @@ class _SplashViewControllerState extends State<SplashViewController> {
         PageTransition(
           type: PageTransitionType.rightToLeft,
           child: HomeViewController(),
-          duration: Duration(milliseconds: 200),
+          duration: Duration(milliseconds: 300),
         ),
       );
     });

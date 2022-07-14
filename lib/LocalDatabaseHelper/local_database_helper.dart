@@ -29,12 +29,6 @@ class LocalDatabaseHepler {
     final path = join(documentsDirectory.path, DBNAME);
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
-      await db.execute('CREATE TABLE tbl_user('
-          'name Text,'
-          'email Text,'
-          'number Text,'
-          'imageUrl Text'
-          ')');
 
       await db.execute('CREATE TABLE tbl_login('
           'name Text,'
@@ -42,36 +36,19 @@ class LocalDatabaseHepler {
           'number Text,'
           'imageUrl Text'
           ')');
-      // await db.execute('CREATE TABLE tbl_category('
-      //     'category_id INTEGER PRIMARY KEY,'
-      //     'category_name Text,'
-      //     'category_image Text'
-      //     ')');
-      // await db.execute('CREATE TABLE tbl_wallpaper('
-      //     'wallpaper_id INTEGER PRIMARY KEY,'
-      //     'category Text,'
-      //     'wallpaper_image Text'
-      //     ')');
     });
   }
 
-  Future<int> insertUsertoLocal({required UserModel userModel}) async {
+   insertUsertoLocal({required UserModel userModel}) async {
     final db = await database;
 
-    final res = await db.insert('tbl_user', {
-      'name': userModel.name,
-      'email': userModel.email,
-      'number': userModel.number,
-      'imageUrl': userModel.imageUrl,
-    });
     await db.insert('tbl_login', {
       'name': userModel.name,
       'email': userModel.email,
       'number': userModel.number,
       'imageUrl': userModel.imageUrl,
     });
-    // print(res.runtimeType);
-    return res;
+
   }
 
   Future<List<UserModel>> fetchUserFromLocal() async {

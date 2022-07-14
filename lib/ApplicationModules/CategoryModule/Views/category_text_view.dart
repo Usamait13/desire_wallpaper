@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-class DrawerTextView extends StatefulWidget {
+class CategoryTextView extends StatefulWidget {
   final text;
   final color;
   final double? fontSize;
   final fontFamily;
   final fontWeight;
 
-  const DrawerTextView({Key? key,required this.text, this.color, this.fontSize, this.fontFamily, this.fontWeight}) : super(key: key);
+  const CategoryTextView({Key? key,required this.text, this.color, this.fontSize, this.fontFamily, this.fontWeight}) : super(key: key);
 
   @override
-  State<DrawerTextView> createState() => _DrawerTextViewState();
+  State<CategoryTextView> createState() => _CategoryTextViewState();
 }
 
-class _DrawerTextViewState extends State<DrawerTextView> {
+class _CategoryTextViewState extends State<CategoryTextView> {
   @override
   Widget build(BuildContext context) {
     return Text(
@@ -24,7 +24,7 @@ class _DrawerTextViewState extends State<DrawerTextView> {
         fontFamily: widget.fontFamily,
         fontWeight: widget.fontWeight,
       ),
-      overflow: TextOverflow.ellipsis,
+      overflow: TextOverflow.visible,
     );
   }
 }
