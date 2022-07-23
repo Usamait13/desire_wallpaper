@@ -14,6 +14,7 @@ import '../../../Utils/app_colors.dart';
 import '../../../Utils/spaces.dart';
 import '../../AuthenticationModule/Services/google_signin_service.dart';
 import '../../AuthenticationModule/ViewControllers/selection_view_controller.dart';
+import '../../ProfileModule/ViewControllers/profile_view_controller.dart';
 import '../Views/drawer_text_view.dart';
 import '../Views/drawer_tile.dart';
 
@@ -74,47 +75,58 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: widget.count != 0
-                          ? Container(
-                              height: 200,
-                              padding: EdgeInsets.only(left: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  AddVerticalSpace(55),
-                                  Container(
-                                    height: 60,
-                                    width: 60,
-                                    padding: EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
+                          ? GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: ProfileViewController(),
+                                        type: PageTransitionType.rightToLeft,
+                                        duration: Duration(milliseconds: 300)));
+                              },
+                              child: Container(
+                                height: 200,
+                                padding: EdgeInsets.only(left: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    AddVerticalSpace(55),
+                                    Container(
+                                      height: 60,
+                                      width: 60,
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                      ),
+                                      child: ClipOval(
+                                        child: widget.userModel.imageUrl == ""
+                                            ? Image.asset(
+                                                "assets/Images/user.png",
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.network(
+                                                widget.userModel.imageUrl,
+                                                fit: BoxFit.fill,
+                                              ),
+                                      ),
+                                    ),
+                                    AddVerticalSpace(10),
+                                    DrawerTextView(
+                                      text: "${widget.userModel.name}",
                                       color: AppColors.white,
-                                      borderRadius: BorderRadius.circular(200),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    child: ClipOval(
-                                      child: widget.userModel.imageUrl == ""
-                                          ? Image.asset(
-                                              "assets/Images/user.png",
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Image.network(
-                                              widget.userModel.imageUrl,
-                                              fit: BoxFit.fill,
-                                            ),
+                                    AddVerticalSpace(5),
+                                    DrawerTextView(
+                                      text: "${widget.userModel.email}",
+                                      color: AppColors.white,
                                     ),
-                                  ),
-                                  AddVerticalSpace(10),
-                                  DrawerTextView(
-                                    text: "${widget.userModel.name}",
-                                    color: AppColors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  AddVerticalSpace(5),
-                                  DrawerTextView(
-                                    text: "${widget.userModel.email}",
-                                    color: AppColors.white,
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             )
                           : Container(
@@ -191,21 +203,23 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
                   title: "Privacy Policy",
                 ),
                 AddVerticalSpace(2),
-                widget.count != 0?DrawerTile(
-                  onTap: () async {
-                    db.deleteLoginTable();
-                    googleSignInService.onGoogleLogout();
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.pushReplacement(
-                        context,
-                        PageTransition(
-                            child: HomeViewController(),
-                            type: PageTransitionType.rightToLeft,
-                            duration: Duration(milliseconds: 300)));
-                  },
-                  icon: Icons.logout,
-                  title: "Log Out",
-                ):SizedBox(),
+                widget.count != 0
+                    ? DrawerTile(
+                        onTap: () async {
+                          db.deleteLoginTable();
+                          googleSignInService.onGoogleLogout();
+                          await FirebaseAuth.instance.signOut();
+                          Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: HomeViewController(),
+                                  type: PageTransitionType.rightToLeft,
+                                  duration: Duration(milliseconds: 300)));
+                        },
+                        icon: Icons.logout,
+                        title: "Log Out",
+                      )
+                    : SizedBox(),
                 // Container(
                 //   height: bannerAd.size.height.toDouble(),
                 //   width: bannerAd.size.width.toDouble(),

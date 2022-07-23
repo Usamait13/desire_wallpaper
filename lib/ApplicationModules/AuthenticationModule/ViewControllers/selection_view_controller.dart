@@ -80,7 +80,8 @@ class _SelectionViewControllerState extends State<SelectionViewController> {
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(200)),
                   child: CircleAvatar(
-                    backgroundImage: AssetImage("assets/Images/user.png"),
+                    backgroundColor: AppColors.white,
+                    backgroundImage: AssetImage("assets/Images/logo.png"),
                   ),
                 ),
                 AddVerticalSpace(80),

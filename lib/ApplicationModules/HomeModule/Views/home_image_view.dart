@@ -1,14 +1,21 @@
 import 'package:desire_wallpaper/Utils/app_colors.dart';
 import 'package:desire_wallpaper/Utils/spaces.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../../Models/user_model.dart';
+import '../../ProfileModule/ViewControllers/profile_view_controller.dart';
 import 'home_text_view.dart';
 
 class HomeProfileImageView extends StatefulWidget {
   final UserModel userModel;
+  final int count;
 
-  const HomeProfileImageView({super.key, required this.userModel});
+  const HomeProfileImageView({
+    super.key,
+    required this.userModel,
+    required this.count,
+  });
 
   @override
   State<HomeProfileImageView> createState() => _HomeProfileImageViewState();
@@ -47,23 +54,35 @@ class _HomeProfileImageViewState extends State<HomeProfileImageView> {
             ),
           ),
           AddHorizontalSpace(10),
-          Container(
-            padding: EdgeInsets.all(3),
-            height: 35,
-            width: 35,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(200),
+          GestureDetector(
+            onTap: () {
+              widget.count != 0
+                  ? Navigator.push(
+                      context,
+                      PageTransition(
+                          child: ProfileViewController(),
+                          type: PageTransitionType.rightToLeft,
+                          duration: Duration(milliseconds: 300)))
+                  : null;
+            },
+            child: Container(
+              padding: EdgeInsets.all(3),
+              height: 35,
+              width: 35,
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(200),
+              ),
+              child: widget.userModel.imageUrl == ""
+                  ? CircleAvatar(
+                      backgroundImage: AssetImage("assets/Images/user.png"),
+                      backgroundColor: AppColors.white,
+                    )
+                  : CircleAvatar(
+                      backgroundImage: NetworkImage(widget.userModel.imageUrl),
+                      backgroundColor: AppColors.white,
+                    ),
             ),
-            child: widget.userModel.imageUrl == ""
-                ? CircleAvatar(
-                    backgroundImage: AssetImage("assets/Images/user.png"),
-                    backgroundColor: AppColors.white,
-                  )
-                : CircleAvatar(
-                    backgroundImage: NetworkImage(widget.userModel.imageUrl),
-                    backgroundColor: AppColors.white,
-                  ),
           ),
         ],
       ),

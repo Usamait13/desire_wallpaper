@@ -14,7 +14,7 @@ class UserModel {
   });
 
   factory UserModel.fromFirebase(dynamic doc) => UserModel(
-    email: (doc.data() as dynamic)["cat_name"] ?? "",
+    email: (doc.data() as dynamic)["email"] ?? "",
     name: (doc.data() as dynamic)["name"] ?? "",
     number: (doc.data() as dynamic)["number"] ?? "",
     imageUrl: (doc.data() as dynamic)["imageUrl"] ?? "",

@@ -76,7 +76,8 @@ class _SignInViewControllerState extends State<SignInViewController> {
                         color: AppColors.black,
                         borderRadius: BorderRadius.circular(200)),
                     child: CircleAvatar(
-                      backgroundImage: AssetImage("assets/Images/user.png"),
+                      backgroundImage: AssetImage("assets/Images/logo.png"),
+                      backgroundColor: AppColors.white,
                     ),
                   ),
                   AddVerticalSpace(80),

@@ -137,6 +137,7 @@ class _HomeViewControllerState extends State<HomeViewController> {
           children: [
             HomeTextView(text: "WallPapers"),
             HomeProfileImageView(
+              count: count,
               userModel: UserModel(
                 email: email,
                 name: name,

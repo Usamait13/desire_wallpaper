@@ -133,6 +133,8 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                     hintText: namevalidate ? "Enter Full Name" : "Full Name",
                     hintColor: namevalidate ? AppColors.red : null,
                     controller: name,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.words,
                   ),
                   AddVerticalSpace(20),
                   AuthTextInputFieldView(
@@ -140,6 +142,7 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                       hintText: emailvalidate ? "Enter Email" : "Email",
                       hintColor: emailvalidate ? AppColors.red : null,
                       controller: email,
+                      keyboardType: TextInputType.emailAddress,
                       onChanged: (value) {
                         setState(() {
                           correctEmail = RegExp(
@@ -154,6 +157,7 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                         numbervalidate ? "Enter Phone Number" : "Phone Number",
                     hintColor: numbervalidate ? AppColors.red : null,
                     controller: number,
+                    keyboardType: TextInputType.number,
                   ),
                   AddVerticalSpace(20),
                   AuthTextInputFieldView(
