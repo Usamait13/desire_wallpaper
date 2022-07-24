@@ -223,12 +223,11 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                               "number": number.text.trim(),
                               "imageUrl": profileImageUrl.trim(),
                             }).then((value) {
-                              db.insertUsertoLocal(
-                                userModel: UserModel(
-                                    email: email.text.trim(),
-                                    name: name.text.trim(),
-                                    number: number.text.trim(),
-                                    imageUrl: profileImageUrl),
+                              db.updateLoginTable(
+                                name:name.text.trim(),
+                                email: email.text.trim(),
+                                number:number.text.trim(),
+                                imageUrl:profileImageUrl.trim(),
                               );
                             });
                             setState(() {

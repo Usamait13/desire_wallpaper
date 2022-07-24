@@ -44,6 +44,7 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
         count = value;
       });
       // count = value;
+      print("count");
       print(count);
       homeViewModel.getUser();
     });

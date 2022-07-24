@@ -29,7 +29,6 @@ class LocalDatabaseHepler {
     final path = join(documentsDirectory.path, DBNAME);
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
-
       await db.execute('CREATE TABLE tbl_login('
           'name Text,'
           'email Text,'
@@ -39,7 +38,7 @@ class LocalDatabaseHepler {
     });
   }
 
-   insertUsertoLocal({required UserModel userModel}) async {
+  insertUsertoLocal({required UserModel userModel}) async {
     final db = await database;
 
     await db.insert('tbl_login', {
@@ -48,7 +47,6 @@ class LocalDatabaseHepler {
       'number': userModel.number,
       'imageUrl': userModel.imageUrl,
     });
-
   }
 
   Future<List<UserModel>> fetchUserFromLocal() async {
@@ -57,7 +55,20 @@ class LocalDatabaseHepler {
     return UserModel.localToListView(res);
   }
 
-   deleteLoginTable() async {
+  updateLoginTable({
+    required String name,
+    required String email,
+    required String number,
+    required String imageUrl,
+  }) async {
+    final db = await database;
+   int res= await db.rawUpdate(
+        'UPDATE tbl_login SET name =?,number =?,imageUrl = ? where email =?',[name,number,imageUrl,email]);
+    print("res");
+    print(res);
+  }
+
+  deleteLoginTable() async {
     final db = await database;
     final res = await db.rawQuery("DELETE FROM tbl_login");
   }
@@ -97,6 +108,5 @@ class LocalDatabaseHepler {
     int count = Sqflite.firstIntValue(
         await db.rawQuery('SELECT COUNT(*) FROM ${table}'))!;
     return count;
-
   }
 }
