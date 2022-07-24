@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 
 // import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../Utils/app_colors.dart';
+import '../ViewModels/home_view_model.dart';
 import '../Views/download_bottom_sheet.dart';
 import '../Views/wallpaper_icons_view.dart';
 
@@ -23,14 +25,29 @@ class WallpaperViewController extends StatefulWidget {
 }
 
 class _WallpaperViewControllerState extends State<WallpaperViewController> {
-
   late BannerAd bannerAd;
+  late RewardedAd rewardedAd;
+  HomeViewModel homeViewModel = Get.put(HomeViewModel());
 
 
   @override
   void initState() {
     super.initState();
     initBannerAds();
+  }
+
+  void initRewardedAds() {
+    RewardedAd.load(
+        adUnitId: "ca-app-pub-5726190159843152/6746282615",
+        request: AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+            onAdLoaded: (ad) {
+              rewardedAd = ad;
+            },
+            onAdFailedToLoad: (LoadAdError error) {
+              print("error");
+              print(error);
+            }));
   }
 
   shareWallpaper() async {

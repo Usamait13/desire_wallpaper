@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,6 +49,7 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
     super.initState();
     initBannerAds();
     getCurrentUser();
+    initInterstitialAd();
   }
 
   Future<void> getCurrentUser() async {
@@ -56,13 +58,28 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
         .collection("users")
         .doc(currentEmail)
         .get();
-    setState((){
-      email.text= (doc.data() as dynamic)["email"] ?? "";
-      name.text=  (doc.data() as dynamic)["name"] ?? "";
-      number.text=  (doc.data() as dynamic)["number"] ?? "";
-      profileImageUrl=  (doc.data() as dynamic)["imageUrl"] ?? "";
+    setState(() {
+      email.text = (doc.data() as dynamic)["email"] ?? "";
+      name.text = (doc.data() as dynamic)["name"] ?? "";
+      number.text = (doc.data() as dynamic)["number"] ?? "";
+      profileImageUrl = (doc.data() as dynamic)["imageUrl"] ?? "";
     });
+  }
 
+  void initInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: InterstitialAd.testAdUnitId,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.show();
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print("error");
+          print(error);
+        },
+      ),
+    );
   }
 
   void initBannerAds() {
@@ -166,7 +183,7 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                   AddVerticalSpace(20),
                   ProfileTextInputFieldView(
                     icon: Icons.email,
-                    hintText:  "Email",
+                    hintText: "Email",
                     controller: email,
                     readOnly: true,
                   ),
@@ -193,23 +210,23 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                   AddVerticalSpace(40),
                   updateAble
                       ? ProfileBTN(
-                    title: "Update",
-                    textColor: AppColors.white,
-                    onPressed: () async {
-                      await FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(email.text)
-                          .update({
-                        "name": name.text,
-                        "phoneNumber": number.text,
-                      });
-                      setState(() {
-                        updateAble = false;
-                      });
-                    },
-                    width: 200,
-                    color: AppColors.black,
-                  )
+                          title: "Update",
+                          textColor: AppColors.white,
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(email.text)
+                                .update({
+                              "name": name.text,
+                              "number": number.text,
+                            });
+                            setState(() {
+                              updateAble = false;
+                            });
+                          },
+                          width: 200,
+                          color: AppColors.black,
+                        )
                       : SizedBox(),
                 ],
               ),

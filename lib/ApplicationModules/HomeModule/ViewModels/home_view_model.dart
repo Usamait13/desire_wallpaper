@@ -20,6 +20,7 @@ class HomeViewModel extends GetxController {
   RxString apiKEY =
       "563492ad6f91700001000001cb84e744de8f4f43ba9001c3748007f2".obs;
 
+
   savetoGallery({required String url}) async {
     var response = await get(Uri.parse(url));
     final result = await ImageGallerySaver.saveImage(

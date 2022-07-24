@@ -17,7 +17,6 @@ class DownloadBTN extends StatefulWidget {
   final icon;
   final double? width;
   final double margin;
-  final indicator;
 
   const DownloadBTN({
     Key? key,
@@ -32,7 +31,6 @@ class DownloadBTN extends StatefulWidget {
     this.fontFamily,
     this.width,
     this.margin = 0,
-    required this.indicator,
   }) : super(key: key);
 
   @override
@@ -73,7 +71,6 @@ class _DownloadBTNState extends State<DownloadBTN> {
                   AddHorizontalSpace(10),
                 ],
               ),
-              widget.indicator,
             ],
           ),
         ),

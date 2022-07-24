@@ -2,6 +2,7 @@ import 'package:desire_wallpaper/ApplicationModules/CategoryModule/Views/categor
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../../Utils/app_colors.dart';
 import '../../Models/category_model.dart';
@@ -17,12 +18,45 @@ class CategoryViewController extends StatefulWidget {
 
 class _CategoryViewControllerState extends State<CategoryViewController> {
   CategoryViewModel categoryViewModel = Get.put(CategoryViewModel());
+  late BannerAd bannerAd;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     categoryViewModel.fetchCategories();
+    initBannerAds();
+    initInterstitialAd();
+  }
+
+  void initInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: InterstitialAd.testAdUnitId,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.show();
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print("error");
+          print(error);
+        },
+      ),
+    );
+  }
+
+  void initBannerAds() {
+    bannerAd = BannerAd(
+      adUnitId: BannerAd.testAdUnitId,
+      listener: BannerAdListener(onAdFailedToLoad: (ad, error) {
+        print("error");
+        print(error);
+      }),
+      request: AdRequest(),
+      size: AdSize.banner,
+    );
+
+    bannerAd.load();
   }
 
   @override
@@ -57,6 +91,11 @@ class _CategoryViewControllerState extends State<CategoryViewController> {
             );
           },
         ),
+      ),
+      bottomNavigationBar: Container(
+        height: bannerAd.size.height.toDouble(),
+        width: bannerAd.size.width.toDouble(),
+        child: AdWidget(ad: bannerAd),
       ),
     );
   }

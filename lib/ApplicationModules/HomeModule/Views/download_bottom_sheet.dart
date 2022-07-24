@@ -6,8 +6,11 @@ import 'package:desire_wallpaper/ApplicationModules/HomeModule/Views/download_bt
 import 'package:desire_wallpaper/ApplicationModules/Models/wallpaper_model.dart';
 import 'package:desire_wallpaper/Utils/app_colors.dart';
 import 'package:desire_wallpaper/Utils/dimensions.dart';
+import 'package:desire_wallpaper/Utils/spaces.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class DownloadBottomSheet extends StatefulWidget {
@@ -30,15 +33,72 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
   Stream<String>? progressString;
   String res = "";
   bool downloading = false;
-  bool setting = false;
 
   HomeViewModel homeViewModel = Get.put(HomeViewModel());
+
+  // late RewardedAd rewardedAd;
+  late InterstitialAd interstitialAd;
+  late BannerAd bannerAd;
+
+  @override
+  void initState() {
+    super.initState();
+    // initRewardedAds();
+    initInterstitialAd();
+    initBannerAds();
+  }
+  void initInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: InterstitialAd.testAdUnitId,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          interstitialAd = ad;
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print("error");
+          print(error);
+        },
+      ),
+    );
+  }
+
+
+  void initBannerAds() {
+    bannerAd = BannerAd(
+      adUnitId: BannerAd.testAdUnitId,
+      listener: BannerAdListener(onAdFailedToLoad: (ad, error) {
+        print("error");
+        print(error);
+      }),
+      request: AdRequest(),
+      size: AdSize.banner,
+    );
+
+    bannerAd.load();
+  }
+
+  //
+  // void initRewardedAds() {
+  //   RewardedAd.load(
+  //       // adUnitId: RewardedAd.testAdUnitId,
+  //       adUnitId: "ca-app-pub-5726190159843152/6746282615",
+  //       request: AdRequest(),
+  //       rewardedAdLoadCallback: RewardedAdLoadCallback(
+  //           onAdLoaded: (ad) {
+  //             rewardedAd = ad;
+  //           },
+  //           onAdFailedToLoad: (LoadAdError error) {
+  //             print("error");
+  //             print(error);
+  //           }));
+  // }
 
   Future<void> setHomeScreenWallpaper() async {
     String url = widget.wallpaperModel.src.original;
     try {
       String val =
-          await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.HOME_SCREEN);
+      await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.HOME_SCREEN);
       home = "${val} Successfully";
       print("result");
       print(home);
@@ -58,7 +118,7 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
     String url = widget.wallpaperModel.src.original;
     try {
       String val =
-          await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.LOCK_SCREEN);
+      await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.LOCK_SCREEN);
       lock = "${val} Successfully";
       print("result");
       print(lock);
@@ -78,7 +138,7 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
     String url = widget.wallpaperModel.src.original;
     try {
       String val =
-          await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.BOTH_SCREENS);
+      await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.BOTH_SCREENS);
       both = "${val} Successfully";
       print("result");
       print(both);
@@ -96,41 +156,39 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: Dimensions.screenWidth(context: context)! - 100,
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            height: 8,
-            width: 80,
+    return Stack(
+      children: [
+        Container(
+          child: Container(
+            height: Dimensions.screenWidth(context: context)! - 100,
+            padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-                color: AppColors.grey.withAlpha(200),
-                borderRadius: BorderRadius.circular(100)),
-          ),
-          setting
-              ? Center(child: CircularProgressIndicator())
-              : Column(
+                color: AppColors.white,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 8,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: AppColors.grey.withAlpha(200),
+                      borderRadius: BorderRadius.circular(100)),
+                ),
+                Column(
                   children: [
                     DownloadBTN(
                       title: home,
                       icon: Icons.wallpaper_outlined,
-                      indicator: downloading
-                          ? CircularProgressIndicator()
-                          : SizedBox(),
                       onPressed: () async {
-                        if (downloading == true) {
-                        } else {
+                        if (downloading == true) {} else {
                           var status = await Permission.storage.status;
                           if (status.isGranted) {
                             setState(() {
                               downloading = true;
                             });
+                            // RewardedAd.load;
                             setHomeScreenWallpaper();
                           } else {
                             await Permission.storage.request();
@@ -140,16 +198,14 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
                     ),
                     // AddVerticalSpace(5),
                     DownloadBTN(
-                      indicator: downloading ? Text(res) : SizedBox(),
                       title: lock,
                       icon: Icons.lock_outline,
                       onPressed: () async {
-                        if (downloading == true) {
-                        } else {
+                        if (downloading == true) {} else {
                           var status = await Permission.storage.status;
                           if (status.isGranted) {
                             setState(() {
-                              setting = true;
+                              downloading = true;
                             });
                             setLockScreenWallpaper();
                           } else {
@@ -159,14 +215,15 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
                       },
                     ),
                     DownloadBTN(
-                      indicator: downloading ? Text(res) : SizedBox(),
                       title: both,
                       icon: Icons.add_chart_outlined,
                       onPressed: () async {
-                        if (downloading == true) {
-                        } else {
+                        if (downloading == true) {} else {
                           var status = await Permission.storage.status;
                           if (status.isGranted) {
+                            setState(() {
+                              downloading = true;
+                            });
                             setBothScreenWallpaper();
                           } else {
                             await Permission.storage.request();
@@ -175,7 +232,6 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
                       },
                     ),
                     DownloadBTN(
-                      indicator: SizedBox(),
                       title: "Save to Gallery",
                       icon: Icons.download_outlined,
                       onPressed: () async {
@@ -183,16 +239,47 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
                         if (status.isGranted) {
                           homeViewModel.savetoGallery(
                               url: widget.wallpaperModel.src.original);
-                          Navigator.pop(context);
+                          // Navigator.pop(context);
+                          interstitialAd.show();
                         } else {
                           await Permission.storage.request();
                         }
                       },
                     ),
+                    AddVerticalSpace(20),
+                    Container(
+                      height: bannerAd.size.height.toDouble(),
+                      width: bannerAd.size.width.toDouble(),
+                      child: AdWidget(ad: bannerAd),
+                    ),
                   ],
                 ),
-        ],
-      ),
+              ],
+            ),
+          ),
+        ),
+        downloading ? Container(
+          height: Dimensions.screenWidth(context: context)-100,
+          // width: Dimensions.screenWidth(context: context),
+          decoration: BoxDecoration(
+    borderRadius: BorderRadius.only(
+    topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.black.withAlpha(200),
+                AppColors.black.withAlpha(200),
+              ],
+            ),
+          ),
+          child: Center(
+            child: SpinKitRotatingCircle(
+              color: Colors.black,
+              size: 50.0,
+            ),
+          ),
+        )
+            : SizedBox(),
+      ],
     );
   }
 }

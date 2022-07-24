@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart';
 
 import '../../../Utils/app_colors.dart';
@@ -25,11 +26,43 @@ class _CategoryWallpaperViewControllerState
   String url = "";
   HomeViewModel homeViewModel = Get.put(HomeViewModel());
   List<WallpaperModel> wallpaperList = [];
-
+  late BannerAd bannerAd;
   @override
   void initState() {
     super.initState();
     getWallpapers();
+    initBannerAds();
+    initInterstitialAd();
+  }
+
+  void initInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: InterstitialAd.testAdUnitId,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.show();
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print("error");
+          print(error);
+        },
+      ),
+    );
+  }
+
+  void initBannerAds() {
+    bannerAd = BannerAd(
+      adUnitId: BannerAd.testAdUnitId,
+      listener: BannerAdListener(onAdFailedToLoad: (ad, error) {
+        print("error");
+        print(error);
+      }),
+      request: AdRequest(),
+      size: AdSize.banner,
+    );
+
+    bannerAd.load();
   }
 
   getWallpapers() async {
@@ -90,6 +123,11 @@ class _CategoryWallpaperViewControllerState
             ));
           },
         ),
+      ),
+      bottomNavigationBar: Container(
+        height: bannerAd.size.height.toDouble(),
+        width: bannerAd.size.width.toDouble(),
+        child: AdWidget(ad: bannerAd),
       ),
     );
   }
