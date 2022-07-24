@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desire_wallpaper/ApplicationModules/AuthenticationModule/Views/auth_btn.dart';
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../Utils/app_colors.dart';
@@ -47,10 +49,22 @@ class _ProfileImageViewState extends State<ProfileImageView> {
                         fit: BoxFit.cover,
                       )
                     : widget.profileImage != null
-                        ? Image.network(
-                            widget.profileImage,
+                        ? CachedNetworkImage(
                             fit: BoxFit.cover,
-                          )
+                            imageUrl: widget.profileImage,
+                            placeholder: (context, url) => Center(
+                                  child: SpinKitRotatingCircle(
+                                    color: Colors.white,
+                                    size: 50.0,
+                                  ),
+                                ),
+                            errorWidget: (context, url, error) {
+                              // print(error);
+                              return Icon(
+                                Icons.error,
+                                color: AppColors.white,
+                              );
+                            })
                         : Image.asset(
                             "assets/Images/user.png",
                             fit: BoxFit.cover,

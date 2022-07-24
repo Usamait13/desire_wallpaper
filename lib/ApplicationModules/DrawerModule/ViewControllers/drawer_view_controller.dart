@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desire_wallpaper/ApplicationModules/CategoryModule/ViewControllers/category_view_controller.dart';
 import 'package:desire_wallpaper/ApplicationModules/DrawerModule/Views/drawer_btn.dart';
 import 'package:desire_wallpaper/ApplicationModules/HomeModule/ViewControllers/home_view_controller.dart';
@@ -7,6 +8,8 @@ import 'package:desire_wallpaper/LocalDatabaseHelper/local_database_helper.dart'
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -14,17 +17,12 @@ import '../../../Utils/app_colors.dart';
 import '../../../Utils/spaces.dart';
 import '../../AuthenticationModule/Services/google_signin_service.dart';
 import '../../AuthenticationModule/ViewControllers/selection_view_controller.dart';
+import '../../HomeModule/ViewModels/home_view_model.dart';
 import '../../ProfileModule/ViewControllers/profile_view_controller.dart';
 import '../Views/drawer_text_view.dart';
 import '../Views/drawer_tile.dart';
 
 class DrawerViewController extends StatefulWidget {
-  final int count;
-  final UserModel userModel;
-
-  const DrawerViewController(
-      {super.key, required this.count, required this.userModel});
-
   @override
   State<DrawerViewController> createState() => _DrawerViewControllerState();
 }
@@ -33,12 +31,22 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
   LocalDatabaseHepler db = LocalDatabaseHepler();
   GoogleSignInService googleSignInService = GoogleSignInService();
   late BannerAd bannerAd;
+  int count = 0;
+  HomeViewModel homeViewModel = Get.put(HomeViewModel());
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initBannerAds();
+    homeViewModel.getCount().then((value) {
+      setState(() {
+        count = value;
+      });
+      // count = value;
+      print(count);
+      homeViewModel.getUser();
+    });
   }
 
   void initBannerAds() {
@@ -74,7 +82,7 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
                     ),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: widget.count != 0
+                      child: count != 0
                           ? GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -87,46 +95,62 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
                               child: Container(
                                 height: 200,
                                 padding: EdgeInsets.only(left: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    AddVerticalSpace(55),
-                                    Container(
-                                      height: 60,
-                                      width: 60,
-                                      padding: EdgeInsets.all(5),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(200),
-                                      ),
-                                      child: ClipOval(
-                                        child: widget.userModel.imageUrl == ""
-                                            ? Image.asset(
-                                                "assets/Images/user.png",
-                                                fit: BoxFit.cover,
-                                              )
-                                            : Image.network(
-                                                widget.userModel.imageUrl,
-                                                fit: BoxFit.fill,
-                                              ),
-                                      ),
-                                    ),
-                                    AddVerticalSpace(10),
-                                    DrawerTextView(
-                                      text: "${widget.userModel.name}",
-                                      color: AppColors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    AddVerticalSpace(5),
-                                    DrawerTextView(
-                                      text: "${widget.userModel.email}",
-                                      color: AppColors.white,
-                                    ),
-                                  ],
-                                ),
+                                child: Obx(() => Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        AddVerticalSpace(55),
+                                        Container(
+                                          height: 60,
+                                          width: 60,
+                                          padding: EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(200),
+                                          ),
+                                          child: ClipOval(
+                                            child:
+                                                homeViewModel.imageUrl.value ==
+                                                        ""
+                                                    ? Image.asset(
+                                                        "assets/Images/user.png",
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    :CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    imageUrl: homeViewModel.imageUrl.value,
+                                                    placeholder: (context, url) => Center(
+                                                      child: SpinKitRotatingCircle(
+                                                        color: Colors.black,
+                                                        size: 30.0,
+                                                      ),
+                                                    ),
+                                                    errorWidget: (context, url, error) {
+                                                      // print(error);
+                                                      return Icon(
+                                                        Icons.error,
+                                                        color: AppColors.black,
+                                                      );
+                                                    }),
+                                          ),
+                                        ),
+                                        AddVerticalSpace(10),
+                                        DrawerTextView(
+                                          text: "${homeViewModel.name.value}",
+                                          color: AppColors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        AddVerticalSpace(5),
+                                        DrawerTextView(
+                                          text: "${homeViewModel.email.value}",
+                                          color: AppColors.white,
+                                        ),
+                                      ],
+                                    )),
                               ),
                             )
                           : Container(
@@ -203,7 +227,7 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
                   title: "Privacy Policy",
                 ),
                 AddVerticalSpace(2),
-                widget.count != 0
+                count != 0
                     ? DrawerTile(
                         onTap: () async {
                           db.deleteLoginTable();

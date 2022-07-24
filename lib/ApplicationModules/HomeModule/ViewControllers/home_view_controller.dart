@@ -40,12 +40,13 @@ class _HomeViewControllerState extends State<HomeViewController> {
   String url = "";
 
   int count = 0;
-  LocalDatabaseHepler db = LocalDatabaseHepler();
-  List<UserModel> currentUser = <UserModel>[];
-  String name = "";
-  String email = "";
-  String number = "";
-  String imageUrl = "";
+
+  // LocalDatabaseHepler db = LocalDatabaseHepler();
+  // List<UserModel> currentUser = <UserModel>[];
+  // String name = "";
+  // String email = "";
+  // String number = "";
+  // String imageUrl = "";
 
   @override
   void initState() {
@@ -64,34 +65,6 @@ class _HomeViewControllerState extends State<HomeViewController> {
         // setState(() {});
       }
     });
-
-    getCount().then((value) {
-      setState(() {
-        count = value;
-      });
-      // count = value;
-      print(count);
-    });
-    getUser();
-  }
-
-  Future<int> getCount() async {
-    return await db.checkDataExistenceByLength(table: "tbl_login");
-  }
-
-  getUser() async {
-    currentUser = await db.fetchUserFromLocal();
-    for (int i = 0; i < currentUser.length; i++) {
-      setState(() {
-        name = currentUser[i].name;
-        email = currentUser[i].email;
-        number = currentUser[i].number;
-        imageUrl = currentUser[i].imageUrl;
-      });
-      // name = currentUser[i].name;
-      // email = currentUser[i].email;
-      // imageUrl = currentUser[i].imageUrl;
-    }
   }
 
   getWallpapers() async {
@@ -135,29 +108,13 @@ class _HomeViewControllerState extends State<HomeViewController> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            HomeTextView(text: "WallPapers"),
-            HomeProfileImageView(
-              count: count,
-              userModel: UserModel(
-                email: email,
-                name: name,
-                number: number,
-                imageUrl: imageUrl,
-              ),
-            ),
+            HomeTextView(text: "Wallpapers"),
+            HomeProfileImageView(),
           ],
         ),
         backgroundColor: AppColors.black,
       ),
-      drawer: DrawerViewController(
-        count: count,
-        userModel: UserModel(
-          email: email,
-          name: name,
-          number: number,
-          imageUrl: imageUrl,
-        ),
-      ),
+      drawer: DrawerViewController(),
       body: Container(
         width: Dimensions.screenWidth(context: context),
         height: Dimensions.screenHeight(context: context),

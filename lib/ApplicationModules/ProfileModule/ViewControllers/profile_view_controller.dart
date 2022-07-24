@@ -12,6 +12,7 @@ import '../../../LocalDatabaseHelper/local_database_helper.dart';
 import '../../../Utils/app_colors.dart';
 import '../../../Utils/spaces.dart';
 import '../../AuthenticationModule/Services/firebase_services.dart';
+import '../../Models/user_model.dart';
 import '../Views/profile_btn.dart';
 import '../Views/profile_image_view.dart';
 import '../Views/profile_text_input_field_view.dart';
@@ -36,7 +37,6 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
   bool isLoading = false;
   bool correctEmail = false;
   var encodedImage;
-  String imageUrl = "";
   String profileImageUrl = "";
   final FirebaseAuth auth = FirebaseAuth.instance;
   LocalDatabaseHepler db = LocalDatabaseHepler();
@@ -127,9 +127,10 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                             .then((value) {
                           if (value != "") {
                             setState(() {
-                              imageUrl = value;
+                              profileImageUrl = value;
+                              updateAble=true;
                               print("imageUrl");
-                              print(imageUrl);
+                              print(profileImageUrl);
                             });
                           }
                         });
@@ -148,7 +149,8 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                             .then((value) {
                           if (value != "") {
                             setState(() {
-                              imageUrl = value;
+                              profileImageUrl = value;
+                              updateAble=true;
                               // print("imageUrl");
                               // print(imageUrl);
                             });
@@ -217,8 +219,17 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                                 .collection("users")
                                 .doc(email.text)
                                 .update({
-                              "name": name.text,
-                              "number": number.text,
+                              "name": name.text.trim(),
+                              "number": number.text.trim(),
+                              "imageUrl": profileImageUrl.trim(),
+                            }).then((value) {
+                              db.insertUsertoLocal(
+                                userModel: UserModel(
+                                    email: email.text.trim(),
+                                    name: name.text.trim(),
+                                    number: number.text.trim(),
+                                    imageUrl: profileImageUrl),
+                              );
                             });
                             setState(() {
                               updateAble = false;
