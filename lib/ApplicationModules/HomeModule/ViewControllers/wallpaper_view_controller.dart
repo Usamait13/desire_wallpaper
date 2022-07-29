@@ -1,14 +1,15 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desire_wallpaper/ApplicationModules/Models/wallpaper_model.dart';
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:flutter/material.dart';
-
-// import 'package:flutter_share/flutter_share.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'dart:typed_data';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:http/http.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../Utils/app_colors.dart';
 import '../ViewModels/home_view_model.dart';
 import '../Views/download_bottom_sheet.dart';
@@ -29,7 +30,6 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
   late RewardedAd rewardedAd;
   HomeViewModel homeViewModel = Get.put(HomeViewModel());
 
-
   @override
   void initState() {
     super.initState();
@@ -40,31 +40,23 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
     RewardedAd.load(
         adUnitId: "ca-app-pub-5726190159843152/6746282615",
         request: AdRequest(),
-        rewardedAdLoadCallback: RewardedAdLoadCallback(
-            onAdLoaded: (ad) {
-              rewardedAd = ad;
-            },
-            onAdFailedToLoad: (LoadAdError error) {
-              print("error");
-              print(error);
-            }));
+        rewardedAdLoadCallback: RewardedAdLoadCallback(onAdLoaded: (ad) {
+          rewardedAd = ad;
+        }, onAdFailedToLoad: (LoadAdError error) {
+          print("error");
+          print(error);
+        }));
   }
 
   shareWallpaper() async {
-    // var response = await get(Uri.parse(widget.wallpaperModel.src.portrait));
-    // final result = await ImageGallerySaver.saveImage(
-    //   response.bodyBytes,
-    // );
-    // print(result['filePath']);
-
-    // var cachedimage = await DefaultCacheManager()
-    //     .getSingleFile(widget.wallpaperModel.src.portrait);
-
-    // await FlutterShare.shareFile(
-    //   title: 'Example share',
-    //   text: 'Example share text',
-    //   filePath: cachedimage.path,
-    // );
+    await DefaultCacheManager()
+        .getSingleFile(widget.wallpaperModel.src.portrait)
+        .then((value) {
+      Share.shareFiles(
+        [value.path],
+        text: 'Great picture',
+      );
+    });
   }
 
   void initBannerAds() {
@@ -168,11 +160,6 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
           ),
         ],
       ),
-      // bottomNavigationBar: Container(
-      //   height: bannerAd.size.height.toDouble(),
-      //   width: bannerAd.size.width.toDouble(),
-      //   child: AdWidget(ad: bannerAd),
-      // ),
     );
   }
 }
