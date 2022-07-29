@@ -3,12 +3,9 @@ import 'package:desire_wallpaper/ApplicationModules/Models/wallpaper_model.dart'
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'dart:typed_data';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:http/http.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../Utils/app_colors.dart';
 import '../ViewModels/home_view_model.dart';
@@ -128,6 +125,8 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
                     onTap: () {
                       showModalBottomSheet<void>(
                         context: context,
+                        isDismissible: false,
+
                         backgroundColor: AppColors.transparent,
                         builder: (BuildContext context) {
                           return DownloadBottomSheet(
