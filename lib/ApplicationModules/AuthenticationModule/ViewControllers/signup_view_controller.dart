@@ -170,7 +170,7 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                   AuthBTN(
                     width: Dimensions.screenWidth(context: context)! - 50,
                     title: "Continue",
-                    onPressed: () {
+                    onPressed: () async {
                       if (name.text.isEmpty) {
                         setState(() {
                           namevalidate = true;
@@ -196,7 +196,7 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                           setState(() {
                             isLoading = true;
                           });
-                          createUserWithEmailAndPassword(
+                          await FirebaseAuth.instance.createUserWithEmailAndPassword(
                             email: email.text.trim(),
                             password: password.text.trim(),
                           ).then((value) {
@@ -216,8 +216,6 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                                 ),
                               )
                                   .then((value) {
-                                print("value");
-                                print(value.toString());
                                 Navigator.push(
                                     context,
                                     PageTransition(
@@ -228,6 +226,9 @@ class _SignUPViewControllerState extends State<SignUPViewController> {
                             });
                           });
                         } on FirebaseAuthException catch (e) {
+                          setState(() {
+                            isLoading = false;
+                          });
                           if (e.code == 'weak-password') {
                             FlutterErrorToast(
                               error: 'The password provided is too weak.',

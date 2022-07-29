@@ -2,8 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desire_wallpaper/ApplicationModules/CategoryModule/ViewControllers/category_view_controller.dart';
 import 'package:desire_wallpaper/ApplicationModules/DrawerModule/Views/drawer_btn.dart';
 import 'package:desire_wallpaper/ApplicationModules/HomeModule/ViewControllers/home_view_controller.dart';
-import 'package:desire_wallpaper/ApplicationModules/Models/user_model.dart';
-import 'package:desire_wallpaper/ApplicationModules/SplashModule/ViewControllers/splash_view_controller.dart';
 import 'package:desire_wallpaper/LocalDatabaseHelper/local_database_helper.dart';
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,7 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../Utils/app_colors.dart';
 import '../../../Utils/spaces.dart';
@@ -31,23 +31,18 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
   LocalDatabaseHepler db = LocalDatabaseHepler();
   GoogleSignInService googleSignInService = GoogleSignInService();
   late BannerAd bannerAd;
-  int count = 0;
   HomeViewModel homeViewModel = Get.put(HomeViewModel());
+
+  final InAppReview inAppReview = InAppReview.instance;
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initBannerAds();
-    homeViewModel.getCount().then((value) {
-      setState(() {
-        count = value;
-      });
-      // count = value;
-      print("count");
-      print(count);
-      homeViewModel.getUser();
-    });
+    homeViewModel.getCount();
+    homeViewModel.getUser();
   }
 
   void initBannerAds() {
@@ -83,7 +78,7 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
                     ),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: count != 0
+                      child: homeViewModel.count.value != 0
                           ? GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -113,23 +108,28 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
                                                 BorderRadius.circular(200),
                                           ),
                                           child: ClipOval(
-                                            child:
-                                                homeViewModel.imageUrl.value ==
-                                                        ""
-                                                    ? Image.asset(
-                                                        "assets/Images/user.png",
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    :CachedNetworkImage(
+                                            child: homeViewModel
+                                                        .imageUrl.value ==
+                                                    ""
+                                                ? Image.asset(
+                                                    "assets/Images/user.png",
                                                     fit: BoxFit.cover,
-                                                    imageUrl: homeViewModel.imageUrl.value,
-                                                    placeholder: (context, url) => Center(
-                                                      child: SpinKitRotatingCircle(
-                                                        color: Colors.black,
-                                                        size: 30.0,
-                                                      ),
-                                                    ),
-                                                    errorWidget: (context, url, error) {
+                                                  )
+                                                : CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    imageUrl: homeViewModel
+                                                        .imageUrl.value,
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        Center(
+                                                          child:
+                                                              SpinKitRotatingCircle(
+                                                            color: Colors.black,
+                                                            size: 30.0,
+                                                          ),
+                                                        ),
+                                                    errorWidget:
+                                                        (context, url, error) {
                                                       // print(error);
                                                       return Icon(
                                                         Icons.error,
@@ -223,12 +223,30 @@ class _DrawerViewControllerState extends State<DrawerViewController> {
                 ),
                 AddVerticalSpace(2),
                 DrawerTile(
-                  onTap: () {},
+                  onTap: () async {},
                   icon: Icons.privacy_tip_outlined,
                   title: "Privacy Policy",
                 ),
                 AddVerticalSpace(2),
-                count != 0
+                DrawerTile(
+                  onTap: () async {
+                    if (await inAppReview.isAvailable()) {
+                    inAppReview.requestReview();
+                    }
+                  },
+                  icon: Icons.star_rate_outlined,
+                  title: "Rate us",
+                ),
+                AddVerticalSpace(2),
+                DrawerTile(
+                  onTap: () {
+                    Share.share("I'm Using Latest Wallpaper App Download and Enjoy Beautiful Wallpapers\nTry it NOW!  https://play.google.com/store/apps/details?id=com.app.desire_wallpaper");
+                  },
+                  icon: Icons.share_outlined,
+                  title: "Share",
+                ),
+                AddVerticalSpace(2),
+                homeViewModel.count.value != 0
                     ? DrawerTile(
                         onTap: () async {
                           db.deleteLoginTable();

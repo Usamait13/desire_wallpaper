@@ -84,7 +84,14 @@ class _SelectionViewControllerState extends State<SelectionViewController> {
                     backgroundImage: AssetImage("assets/Images/logo.png"),
                   ),
                 ),
-                AddVerticalSpace(80),
+                AddVerticalSpace(20),
+                AuthTextView(
+                  text: "Desire Wallpapers",
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.white,
+                ),
+                AddVerticalSpace(60),
                 SelectionTIle(
                   title: "Sign In with Email/Password",
                   imageUrl: "assets/Images/email.png",
@@ -126,8 +133,6 @@ class _SelectionViewControllerState extends State<SelectionViewController> {
                               imageUrl: imageUrl),
                         )
                             .then((value) {
-                          print("value");
-                          print(value.toString());
                           Navigator.push(
                               context,
                               PageTransition(
@@ -140,14 +145,14 @@ class _SelectionViewControllerState extends State<SelectionViewController> {
                   },
                 ),
                 AddVerticalSpace(10),
-                DividerTile(),
-                AddVerticalSpace(10),
-                SelectionTIle(
-                  title: "Sign In with Facebook",
-                  imageUrl: "assets/Images/facebook.png",
-                  onTap: () {},
-                ),
-                AddVerticalSpace(80),
+                // DividerTile(),
+                // AddVerticalSpace(10),
+                // SelectionTIle(
+                //   title: "Sign In with Facebook",
+                //   imageUrl: "assets/Images/facebook.png",
+                //   onTap: () {},
+                // ),
+                AddVerticalSpace(100),
               ],
             ),
           ),

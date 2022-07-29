@@ -36,39 +36,40 @@ class _ProfileImageViewState extends State<ProfileImageView> {
     return Stack(
       children: [
         Container(
-            width: 150,
-            height: 150,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: AppColors.black,
-                borderRadius: BorderRadius.circular(200)),
-            child: ClipOval(
-                child: widget.fileImage != null
-                    ? Image.file(
-                        widget.fileImage,
+          width: 150,
+          height: 150,
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              color: AppColors.black, borderRadius: BorderRadius.circular(200)),
+          child: ClipOval(
+            child: widget.fileImage != null
+                ? Image.file(
+                    widget.fileImage,
+                    fit: BoxFit.cover,
+                  )
+                : widget.profileImage != ""
+                    ? CachedNetworkImage(
                         fit: BoxFit.cover,
-                      )
-                    : widget.profileImage != null
-                        ? CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl: widget.profileImage,
-                            placeholder: (context, url) => Center(
-                                  child: SpinKitRotatingCircle(
-                                    color: Colors.white,
-                                    size: 50.0,
-                                  ),
-                                ),
-                            errorWidget: (context, url, error) {
-                              // print(error);
-                              return Icon(
-                                Icons.error,
-                                color: AppColors.white,
-                              );
-                            })
-                        : Image.asset(
-                            "assets/Images/user.png",
-                            fit: BoxFit.cover,
-                          ))),
+                        imageUrl: widget.profileImage,
+                        placeholder: (context, url) => Center(
+                              child: SpinKitRotatingCircle(
+                                color: Colors.white,
+                                size: 50.0,
+                              ),
+                            ),
+                        errorWidget: (context, url, error) {
+                          // print(error);
+                          return Icon(
+                            Icons.error,
+                            color: AppColors.white,
+                          );
+                        })
+                    : Image.asset(
+                        "assets/Images/user.png",
+                        fit: BoxFit.cover,
+                      ),
+          ),
+        ),
         Positioned(
           bottom: 5,
           right: 5,

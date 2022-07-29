@@ -38,7 +38,7 @@ class LocalDatabaseHepler {
     });
   }
 
-  insertUsertoLocal({required UserModel userModel}) async {
+  Future<void> insertUsertoLocal({required UserModel userModel}) async {
     final db = await database;
 
     await db.insert('tbl_login', {

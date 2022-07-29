@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:desire_wallpaper/ApplicationModules/AuthenticationModule/ViewControllers/selection_view_controller.dart';
 import 'package:desire_wallpaper/Utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -13,21 +14,15 @@ class HomeProfileImageView extends StatefulWidget {
 }
 
 class _HomeProfileImageViewState extends State<HomeProfileImageView> {
-  int count = 0;
+  // int count = 0;
   HomeViewModel homeViewModel = Get.put(HomeViewModel());
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    homeViewModel.getCount().then((value) {
-      setState(() {
-        count = value;
-      });
-      // count = value;
-      print(count);
-      homeViewModel.getUser();
-    });
+    homeViewModel.getCount();
+    homeViewModel.getUser();
   }
 
   @override
@@ -64,14 +59,19 @@ class _HomeProfileImageViewState extends State<HomeProfileImageView> {
               // AddHorizontalSpace(10),
               GestureDetector(
                 onTap: () {
-                  count != 0
+                  homeViewModel.count.value != 0
                       ? Navigator.push(
                           context,
                           PageTransition(
                               child: ProfileViewController(),
                               type: PageTransitionType.rightToLeft,
                               duration: Duration(milliseconds: 300)))
-                      : null;
+                      : Navigator.push(
+                      context,
+                      PageTransition(
+                          child: SelectionViewController(),
+                          type: PageTransitionType.rightToLeft,
+                          duration: Duration(milliseconds: 300)));
                 },
                 child: Container(
                   padding: EdgeInsets.all(3),
@@ -81,28 +81,34 @@ class _HomeProfileImageViewState extends State<HomeProfileImageView> {
                     color: AppColors.white,
                     borderRadius: BorderRadius.circular(200),
                   ),
-                  child: homeViewModel.imageUrl.value == ""
-                      ? CircleAvatar(
+                  child: homeViewModel.count.value != 0
+                      ? homeViewModel.imageUrl.value == ""
+                          ? CircleAvatar(
+                              backgroundImage:
+                                  AssetImage("assets/Images/user.png"),
+                              backgroundColor: AppColors.white,
+                            )
+                          : ClipOval(
+                              child: CachedNetworkImage(
+                                  fit: BoxFit.cover,
+                                  imageUrl: homeViewModel.imageUrl.value,
+                                  placeholder: (context, url) => Center(
+                                        child: SpinKitRotatingCircle(
+                                          color: Colors.black,
+                                          size: 20.0,
+                                        ),
+                                      ),
+                                  errorWidget: (context, url, error) {
+                                    // print(error);
+                                    return Icon(
+                                      Icons.error,
+                                      color: AppColors.black,
+                                    );
+                                  }),
+                            )
+                      : CircleAvatar(
                           backgroundImage: AssetImage("assets/Images/user.png"),
                           backgroundColor: AppColors.white,
-                        )
-                      : ClipOval(
-                          child: CachedNetworkImage(
-                              fit: BoxFit.cover,
-                              imageUrl: homeViewModel.imageUrl.value,
-                              placeholder: (context, url) => Center(
-                                    child: SpinKitRotatingCircle(
-                                      color: Colors.black,
-                                      size: 20.0,
-                                    ),
-                                  ),
-                              errorWidget: (context, url, error) {
-                                // print(error);
-                                return Icon(
-                                  Icons.error,
-                                  color: AppColors.black,
-                                );
-                              }),
                         ),
                 ),
               ),

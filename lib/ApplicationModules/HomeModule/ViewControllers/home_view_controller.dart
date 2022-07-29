@@ -39,7 +39,7 @@ class _HomeViewControllerState extends State<HomeViewController> {
   int noOfImageToLoad = 6;
   String url = "";
 
-  int count = 0;
+  // int count = 0;
 
   // LocalDatabaseHepler db = LocalDatabaseHepler();
   // List<UserModel> currentUser = <UserModel>[];
@@ -53,6 +53,7 @@ class _HomeViewControllerState extends State<HomeViewController> {
     // TODO: implement initState
     super.initState();
     initBannerAds();
+    homeViewModel.getUser();
     categoryViewModel.fetchCategories();
     getWallpapers();
     scrollController.addListener(() {
@@ -66,6 +67,8 @@ class _HomeViewControllerState extends State<HomeViewController> {
       }
     });
   }
+
+
 
   getWallpapers() async {
     url =

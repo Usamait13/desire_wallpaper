@@ -8,7 +8,9 @@ import 'package:desire_wallpaper/Utils/app_colors.dart';
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:desire_wallpaper/Utils/spaces.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_wallpaper_manager/flutter_wallpaper_manager.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -47,6 +49,7 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
     initInterstitialAd();
     initBannerAds();
   }
+
   void initInterstitialAd() {
     InterstitialAd.load(
       adUnitId: InterstitialAd.testAdUnitId,
@@ -62,7 +65,6 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
       ),
     );
   }
-
 
   void initBannerAds() {
     bannerAd = BannerAd(
@@ -96,60 +98,61 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
 
   Future<void> setHomeScreenWallpaper() async {
     String url = widget.wallpaperModel.src.original;
+    bool result = false;
+    File cachedimage = await DefaultCacheManager().getSingleFile(url);
+    int location = WallpaperManager.HOME_SCREEN;
     try {
-      String val =
-      await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.HOME_SCREEN);
-      home = "${val} Successfully";
-      print("result");
-      print(home);
+      result = await WallpaperManager.setWallpaperFromFile(
+          cachedimage.path, location);
     } catch (e) {
-      home = 'Failed to get wallpaper.';
-      print(e.toString());
+      print(e);
     }
-
     if (!mounted) return;
     setState(() {
-      home = home;
+      if (result == true) {
+        home = "Wallpaper Updated";
+      }
       downloading = false;
     });
   }
 
   Future<void> setLockScreenWallpaper() async {
     String url = widget.wallpaperModel.src.original;
+    bool result = false;
+    File cachedimage = await DefaultCacheManager().getSingleFile(url);
+    int location = WallpaperManager.LOCK_SCREEN;
     try {
-      String val =
-      await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.LOCK_SCREEN);
-      lock = "${val} Successfully";
-      print("result");
-      print(lock);
+      result = await WallpaperManager.setWallpaperFromFile(
+          cachedimage.path, location);
     } catch (e) {
-      lock = 'Failed to get wallpaper.';
-      print(e.toString());
+      print(e);
     }
-
     if (!mounted) return;
     setState(() {
-      lock = lock;
+      if (result == true) {
+        lock = "Wallpaper Updated";
+      }
       downloading = false;
     });
   }
 
   Future<void> setBothScreenWallpaper() async {
     String url = widget.wallpaperModel.src.original;
+    bool result = false;
+    File cachedimage = await DefaultCacheManager().getSingleFile(url);
+    int location = WallpaperManager.BOTH_SCREEN;
     try {
-      String val =
-      await AsyncWallpaper.setWallpaper(url, AsyncWallpaper.BOTH_SCREENS);
-      both = "${val} Successfully";
-      print("result");
-      print(both);
+      result = await WallpaperManager.setWallpaperFromFile(
+          cachedimage.path, location);
     } catch (e) {
-      both = 'Failed to get wallpaper.';
-      print(e.toString());
+      print(e);
     }
 
     if (!mounted) return;
     setState(() {
-      both = both;
+      if (result == true) {
+        both = "Wallpaper Updated";
+      }
       downloading = false;
     });
   }
@@ -160,12 +163,13 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
       children: [
         Container(
           child: Container(
-            height: Dimensions.screenWidth(context: context)! - 100,
+            height: Dimensions.screenWidth(context: context),
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20))),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -182,7 +186,8 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
                       title: home,
                       icon: Icons.wallpaper_outlined,
                       onPressed: () async {
-                        if (downloading == true) {} else {
+                        if (downloading == true) {
+                        } else {
                           var status = await Permission.storage.status;
                           if (status.isGranted) {
                             setState(() {
@@ -201,7 +206,8 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
                       title: lock,
                       icon: Icons.lock_outline,
                       onPressed: () async {
-                        if (downloading == true) {} else {
+                        if (downloading == true) {
+                        } else {
                           var status = await Permission.storage.status;
                           if (status.isGranted) {
                             setState(() {
@@ -218,7 +224,8 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
                       title: both,
                       icon: Icons.add_chart_outlined,
                       onPressed: () async {
-                        if (downloading == true) {} else {
+                        if (downloading == true) {
+                        } else {
                           var status = await Permission.storage.status;
                           if (status.isGranted) {
                             setState(() {
@@ -258,26 +265,28 @@ class _DownloadBottomSheetState extends State<DownloadBottomSheet> {
             ),
           ),
         ),
-        downloading ? Container(
-          height: Dimensions.screenWidth(context: context)-100,
-          // width: Dimensions.screenWidth(context: context),
-          decoration: BoxDecoration(
-    borderRadius: BorderRadius.only(
-    topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            gradient: LinearGradient(
-              colors: [
-                AppColors.black.withAlpha(200),
-                AppColors.black.withAlpha(200),
-              ],
-            ),
-          ),
-          child: Center(
-            child: SpinKitRotatingCircle(
-              color: Colors.black,
-              size: 50.0,
-            ),
-          ),
-        )
+        downloading
+            ? Container(
+                height: Dimensions.screenWidth(context: context),
+                // width: Dimensions.screenWidth(context: context),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.black.withAlpha(200),
+                      AppColors.black.withAlpha(200),
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: SpinKitRotatingCircle(
+                    color: Colors.black,
+                    size: 50.0,
+                  ),
+                ),
+              )
             : SizedBox(),
       ],
     );

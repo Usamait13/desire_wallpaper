@@ -14,7 +14,7 @@ class HomeViewModel extends GetxController {
       "563492ad6f91700001000001cb84e744de8f4f43ba9001c3748007f2".obs;
 
 
-  // RxInt count = 0.obs;
+  RxInt count = 0.obs;
   LocalDatabaseHepler db = LocalDatabaseHepler();
   RxList<UserModel> currentUser = <UserModel>[].obs;
   RxString name = "".obs;
@@ -30,8 +30,8 @@ class HomeViewModel extends GetxController {
     );
   }
 
-  Future<int> getCount() async {
-    return await db.checkDataExistenceByLength(table: "tbl_login");
+  getCount() async {
+    count.value =  await db.checkDataExistenceByLength(table: "tbl_login");
   }
 
   getUser() async {

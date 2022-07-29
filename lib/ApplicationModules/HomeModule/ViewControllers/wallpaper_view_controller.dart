@@ -36,17 +36,17 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
     initBannerAds();
   }
 
-  void initRewardedAds() {
-    RewardedAd.load(
-        adUnitId: "ca-app-pub-5726190159843152/6746282615",
-        request: AdRequest(),
-        rewardedAdLoadCallback: RewardedAdLoadCallback(onAdLoaded: (ad) {
-          rewardedAd = ad;
-        }, onAdFailedToLoad: (LoadAdError error) {
-          print("error");
-          print(error);
-        }));
-  }
+  // void initRewardedAds() {
+  //   RewardedAd.load(
+  //       adUnitId: "ca-app-pub-5726190159843152/6746282615",
+  //       request: AdRequest(),
+  //       rewardedAdLoadCallback: RewardedAdLoadCallback(onAdLoaded: (ad) {
+  //         rewardedAd = ad;
+  //       }, onAdFailedToLoad: (LoadAdError error) {
+  //         print("error");
+  //         print(error);
+  //       }));
+  // }
 
   shareWallpaper() async {
     await DefaultCacheManager()
@@ -54,7 +54,7 @@ class _WallpaperViewControllerState extends State<WallpaperViewController> {
         .then((value) {
       Share.shareFiles(
         [value.path],
-        text: 'Great picture',
+        text: "I'm Using Latest Wallpaper App Download and Enjoy Beautiful Wallpapers\nTry it NOW!  https://play.google.com/store/apps/details?id=com.app.desire_wallpaper",
       );
     });
   }

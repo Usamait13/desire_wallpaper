@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:desire_wallpaper/Utils/dimensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -35,6 +36,7 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
   String currentEmail = "";
 
   bool isLoading = false;
+  bool LoadingImage = false;
   bool correctEmail = false;
   var encodedImage;
   String profileImageUrl = "";
@@ -123,6 +125,9 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                         encodedImage = File(photo!.path);
                       });
                       if (photo != null) {
+                        setState((){
+                          LoadingImage = true;
+                        });
                         uploadUserImage(encodedImage: encodedImage)
                             .then((value) {
                           if (value != "") {
@@ -145,12 +150,16 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                         encodedImage = File(photo!.path);
                       });
                       if (photo != null) {
+                        setState((){
+                          LoadingImage = true;
+                        });
                         uploadUserImage(encodedImage: encodedImage)
                             .then((value) {
                           if (value != "") {
                             setState(() {
                               profileImageUrl = value;
                               updateAble=true;
+                              LoadingImage = false;
                               // print("imageUrl");
                               // print(imageUrl);
                             });
@@ -215,6 +224,9 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                           title: "Update",
                           textColor: AppColors.white,
                           onPressed: () async {
+                            setState((){
+                              isLoading = true;
+                            });
                             await FirebaseFirestore.instance
                                 .collection("users")
                                 .doc(email.text)
@@ -229,6 +241,12 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
                                 number:number.text.trim(),
                                 imageUrl:profileImageUrl.trim(),
                               );
+                            }).then((value) {
+                              setState((){
+                                setState((){
+                                  isLoading = false;
+                                });
+                              });
                             });
                             setState(() {
                               updateAble = false;
@@ -248,6 +266,46 @@ class _ProfileViewControllerState extends State<ProfileViewController> {
             child: AdWidget(ad: bannerAd),
           ),
         ),
+        LoadingImage
+            ? Container(
+          height: Dimensions.screenHeight(context: context),
+          width: Dimensions.screenWidth(context: context),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.black.withAlpha(200),
+                AppColors.black.withAlpha(200),
+              ],
+            ),
+          ),
+          child: Center(
+            child: SpinKitRotatingCircle(
+              color: Colors.black,
+              size: 50.0,
+            ),
+          ),
+        )
+            : SizedBox(),
+        isLoading
+            ? Container(
+          height: Dimensions.screenHeight(context: context),
+          width: Dimensions.screenWidth(context: context),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.black.withAlpha(200),
+                AppColors.black.withAlpha(200),
+              ],
+            ),
+          ),
+          child: Center(
+            child: SpinKitRotatingCircle(
+              color: Colors.black,
+              size: 50.0,
+            ),
+          ),
+        )
+            : SizedBox(),
       ],
     );
   }

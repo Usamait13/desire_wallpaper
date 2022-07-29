@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:desire_wallpaper/ApplicationModules/AuthenticationModule/ViewControllers/signup_view_controller.dart';
+import 'package:desire_wallpaper/ApplicationModules/Models/user_model.dart';
+import 'package:desire_wallpaper/LocalDatabaseHelper/local_database_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -9,6 +12,7 @@ import '../../../Utils/app_colors.dart';
 import '../../../Utils/dimensions.dart';
 import '../../../Utils/spaces.dart';
 import '../../../Utils/toast.dart';
+import '../../HomeModule/ViewControllers/home_view_controller.dart';
 import '../Views/auth_btn.dart';
 import '../Views/auth_text_input_field_view.dart';
 import '../Views/auth_text_view.dart';
@@ -30,6 +34,7 @@ class _SignInViewControllerState extends State<SignInViewController> {
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   late BannerAd bannerAd;
+  LocalDatabaseHepler db = LocalDatabaseHepler();
 
   @override
   void initState() {
@@ -112,6 +117,32 @@ class _SignInViewControllerState extends State<SignInViewController> {
                           setState(() {
                             isLoading = true;
                           });
+                          FirebaseAuth.instance
+                              .signInWithEmailAndPassword(
+                                  email: email.text, password: password.text)
+                              .then((value) async {
+                            DocumentSnapshot doc = await FirebaseFirestore
+                                .instance
+                                .collection("users")
+                                .doc(email.text)
+                                .get();
+                            db.insertUsertoLocal(
+                              userModel: UserModel(
+                                email: email.text,
+                                name: (doc.data() as dynamic)["name"] ?? "",
+                                number: (doc.data() as dynamic)["number"] ?? "",
+                                imageUrl:
+                                    (doc.data() as dynamic)["imageUrl"] ?? "",
+                              ),
+                            ).then((value) {
+                              Navigator.push(
+                                  context,
+                                  PageTransition(
+                                      child: HomeViewController(),
+                                      type: PageTransitionType.rightToLeft,
+                                      duration: Duration(milliseconds: 200)));
+                            });
+                          });
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
                             FlutterErrorToast(
@@ -131,32 +162,6 @@ class _SignInViewControllerState extends State<SignInViewController> {
                     fontSize: 18,
                   ),
                   AddVerticalSpace(30),
-                  // Container(
-                  //   width: Dimensions.screenWidth(context: context),
-                  //   padding: EdgeInsets.only(bottom: 20),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: [
-                  //       AuthTextView(text: "Don't have an account?"),
-                  //       AddHorizontalSpace(5),
-                  //       InkWell(
-                  //         onTap: () {
-                  //           Navigator.push(
-                  //               context,
-                  //               PageTransition(
-                  //                   child: SignUPViewController(),
-                  //                   type: PageTransitionType.rightToLeft,
-                  //                   duration: Duration(milliseconds: 300)));
-                  //         },
-                  //         child: AuthTextView(
-                  //           text: "Sign Up",
-                  //           color: AppColors.blue,
-                  //           fontSize: 16,
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                   AddVerticalSpace(20),
                 ],
               ),
@@ -167,7 +172,7 @@ class _SignInViewControllerState extends State<SignInViewController> {
             child: Stack(
               children: [
                 Positioned(
-                  bottom:  0,
+                  bottom: 0,
                   right: 20,
                   left: 20,
                   child: Container(
@@ -202,30 +207,29 @@ class _SignInViewControllerState extends State<SignInViewController> {
                     ],
                   ),
                 ),
-
               ],
             ),
           ),
         ),
         isLoading
             ? Container(
-          height: Dimensions.screenHeight(context: context),
-          width: Dimensions.screenWidth(context: context),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.black.withAlpha(200),
-                AppColors.black.withAlpha(200),
-              ],
-            ),
-          ),
-          child: Center(
-            child: SpinKitRotatingCircle(
-              color: Colors.black,
-              size: 50.0,
-            ),
-          ),
-        )
+                height: Dimensions.screenHeight(context: context),
+                width: Dimensions.screenWidth(context: context),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.black.withAlpha(200),
+                      AppColors.black.withAlpha(200),
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: SpinKitRotatingCircle(
+                    color: Colors.black,
+                    size: 50.0,
+                  ),
+                ),
+              )
             : SizedBox(),
       ],
     );

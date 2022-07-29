@@ -18,29 +18,18 @@ Future<String> uploadUserImage({required encodedImage}) async {
   }
 }
 
-Future<void> createUserWithEmailAndPassword({
-  required String email,
-  required String password,
-}) async {
-  await FirebaseAuth.instance.createUserWithEmailAndPassword(
-    email: email,
-    password: password,
-  );
-}
-
 Future<void> insertUserDatatoFirebase({
   required String name,
   required String email,
   required String number,
   required String imageUrl,
 }) async {
-  await FirebaseFirestore.instance
-      .collection("users")
-      .doc(email)
-      .set({
+  await FirebaseFirestore.instance.collection("users").doc(email).set({
     "name": name,
     "email": email,
     "number": number,
     "imageUrl": imageUrl,
   });
 }
+
+
